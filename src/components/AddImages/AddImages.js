@@ -56,7 +56,7 @@ const Home = () => {
             return (
               <div key={index}>
                 <div className="image-item">
-                  <img alt="test" src={item.image} />
+                  <img alt="image-item" src={item.image} />
                 </div>
                 <div className="title">{item.title}</div>
               </div>
