@@ -50,12 +50,12 @@ const Home = () => {
       )}
 
       {/* map to render each image */}
-      <div>
+      <div className="image-list">
         {bulkImages.length > 0 &&
           bulkImages.map((item, index) => {
             return (
               <div key={index}>
-                <div>
+                <div className="image-item">
                   <img alt="test" src={item.image} />
                 </div>
                 <div className="title">{item.title}</div>
