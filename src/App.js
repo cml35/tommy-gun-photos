@@ -1,13 +1,10 @@
-import './App.css';
-import Home from "./containers/Home";
+import "./App.css";
+import AddImages from "./components/AddImages/AddImages";
 
 function App() {
   return (
     <div className="App">
-      {/* <header className="App-header">
-        
-      </header> */}
-      <Home />
+      <AddImages />
     </div>
   );
 }

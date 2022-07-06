@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import WebcamCapture from "../components/WebcamCapture";
+import "./AddImages.css";
+import WebcamCapture from "../WebcamCapture/WebcamCapture";
 
 const Home = () => {
   const [image, setImage] = useState("");
@@ -32,10 +33,10 @@ const Home = () => {
   };
 
   return (
-    <>
-      <p>Capture</p>
+    <div className="home-container">
+      <h1>Add Images</h1>
       {showForm ? (
-        <form onSubmit={submitTitle}>
+        <form className="form" onSubmit={submitTitle}>
           <input
             type="text"
             placeholder="Title"
@@ -54,13 +55,15 @@ const Home = () => {
           bulkImages.map((item, index) => {
             return (
               <div key={index}>
-                {item.title}
-                <img alt="test" src={item.image} />
+                <div>
+                  <img alt="test" src={item.image} />
+                </div>
+                <div className="title">{item.title}</div>
               </div>
             );
           })}
       </div>
-    </>
+    </div>
   );
 };
 
