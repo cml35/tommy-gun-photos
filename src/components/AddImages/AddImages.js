@@ -43,7 +43,7 @@ const Home = () => {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
           />
-          <button type="submit">Upload</button>
+          <button type="submit">Add photo</button>
         </form>
       ) : (
         <WebcamCapture handleClick={handleClick} />

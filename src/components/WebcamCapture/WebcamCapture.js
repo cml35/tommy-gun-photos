@@ -26,7 +26,7 @@ const WebcamCapture = ({ handleClick }) => {
               }}
               className="webcam-btn"
             >
-              Add photo
+              Capture image
             </button>
           )}
         </Webcam>
