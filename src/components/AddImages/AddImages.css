@@ -63,3 +63,13 @@
                 color:white;
                 margin-bottom:20px;
         }
+
+        .image-list {
+            display: flex;
+            flex-direction: row;
+        }
+
+        .image-item img {
+            width: 300;
+            height: 250px;
+        }
