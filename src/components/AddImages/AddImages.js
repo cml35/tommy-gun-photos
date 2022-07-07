@@ -15,7 +15,6 @@ const Home = () => {
     };
     const bulkImagesUpdated = bulkImages;
     bulkImagesUpdated.push(imagePackage);
-    console.log("updated createBulkImage", bulkImagesUpdated);
     setBulkImages(bulkImagesUpdated);
     setImage("");
     setTitle("");
@@ -32,9 +31,13 @@ const Home = () => {
     setShowForm(true);
   };
 
+  const uploadPhoto = () => {
+    //Uploads the bulk of images to sS3
+  };
+
   return (
     <div className="home-container">
-      <h1>Add Images</h1>
+      <h1>React-Webcam Demo</h1>
       {showForm ? (
         <form className="form" onSubmit={submitTitle}>
           <input
@@ -63,6 +66,16 @@ const Home = () => {
             );
           })}
       </div>
+      {bulkImages.length > 0 && (
+        <button
+          onClick={() => {
+            uploadPhoto();
+          }}
+        >
+          {" "}
+          Upload photos
+        </button>
+      )}
     </div>
   );
 };
