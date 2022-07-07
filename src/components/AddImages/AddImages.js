@@ -3,15 +3,16 @@ import uploadFile, { setConfig } from "@conqa/s3-upload/dist";
 
 import "./AddImages.css";
 import WebcamCapture from "../WebcamCapture/WebcamCapture";
-// import toFile from "../../utils";
+import { getIdToken } from "../../hooks/auth";
 
 setConfig({
   // env should be set to one of 'staging' or 'production'
   env: "staging"
 });
 
+const BATCH_UPDATE_URL = "https://webapp-api-oceania-staging.con.qa/v1/batchUpdate";
+
 const Home = () => {
-  
   const [image, setImage] = useState("");
   const [title, setTitle] = useState("");
   const [bulkImages, setBulkImages] = useState([]);
@@ -77,12 +78,78 @@ const Home = () => {
     console.log("files", files);
 
     //Uploads the bulk of images to sS3
-    files.map(async (file) => {
+    const data = files.map(async (file) => {
       const result = await uploadFile(file);
-      console.log('result', result);
-      return result;
+      const { key } = result;
+      console.log("key", key);
+      return {
+        ct: file.type,
+        hash: key,
+        name: file.name,
+        type: "post"
+      }
     });
+    console.log("data", data);
+
+    const updates = genUpdate(data);
+    const requestBody = {
+      accountId: "2dfe64e4-36bd-49b5-9be2-a56fbbf02720",
+      projectId: "35ae371a-2fd7-4e00-81d5-1596d03252b8",
+      source: "addFiles",
+      updates
+    };
+    
+    //Batch update photos to existing checkpoint
+    const authToken = getIdToken();
+    fetch(BATCH_UPDATE_URL, {
+      "headers": {
+        "authorization": `Bearer ${authToken}`, //todo fix config file to include neccessary global authConfig variable
+        "content-type": "application/json"
+      },
+      "referrer": "https://s3.con.qa/",
+      "referrerPolicy": "strict-origin-when-cross-origin",
+      "body": JSON.stringify(requestBody),
+      "method": "POST",
+      "mode": "cors",
+      "credentials": "include"
+    });
+    console.log("upload completed!");
   };
+
+  const genEntry = (someData) => {
+    const { ct, hash, name, type } = someData;
+
+    return {
+      data: [
+        {
+          ct,
+          hash
+        }
+      ],
+      meta: {
+        name,
+        type
+      }
+    }
+
+  };
+
+  const genUpdate = (data) => {
+    return [{
+      entry: genEntry(data),
+      path: genPath()
+    }]
+  };
+
+  const genPath = () => {
+    return [
+      "qa_24190571-8421-4081-9ce4-30671e24b43e",
+      "15a4388b-713b-4341-b57c-9d733b170cd0",
+      "785522d9-38a4-4f57-b263-a18d12798f64",
+      "19bd8d6f-619e-572d-8cf1-b75553fd684e",
+      "ede60376-1a94-5fbc-9829-b35fd064c0a5"
+    ];
+  }
 
   return (
     <div className="home-container">
