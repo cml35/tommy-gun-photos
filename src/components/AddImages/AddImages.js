@@ -73,12 +73,12 @@ const Home = () => {
     setShowForm(true);
   };
 
-  const upload = (bulkImages) => {
+  const upload = async (bulkImages) => {
     const files = transform(bulkImages);
     console.log("files", files);
 
     //Uploads the bulk of images to sS3
-    const data = files.map(async (file) => {
+    const data = await Promise.all(files.map(async (file) => {
       const result = await uploadFile(file);
       const { key } = result;
       console.log("key", key);
@@ -88,10 +88,12 @@ const Home = () => {
         name: file.name,
         type: "post"
       }
-    });
+    }));
     console.log("data", data);
 
+    //need an array of updates one per image
     const updates = genUpdate(data);
+    console.log("updates", updates);
     const requestBody = {
       accountId: "2dfe64e4-36bd-49b5-9be2-a56fbbf02720",
       projectId: "35ae371a-2fd7-4e00-81d5-1596d03252b8",
@@ -100,18 +102,18 @@ const Home = () => {
     };
     
     //Batch update photos to existing checkpoint
-    const authToken = getIdToken();
-    fetch(BATCH_UPDATE_URL, {
+    const authToken = await getIdToken();
+    console.log("authToken", authToken);
+
+    console.log("requestBody", requestBody);
+    
+    await fetch(BATCH_UPDATE_URL, {
       "headers": {
-        "authorization": `Bearer ${authToken}`, //todo fix config file to include neccessary global authConfig variable
+        "authorization": `Bearer ${authToken}`,
         "content-type": "application/json"
       },
-      "referrer": "https://s3.con.qa/",
-      "referrerPolicy": "strict-origin-when-cross-origin",
       "body": JSON.stringify(requestBody),
-      "method": "POST",
-      "mode": "cors",
-      "credentials": "include"
+      "method": "POST"
     });
     console.log("upload completed!");
   };
@@ -135,10 +137,10 @@ const Home = () => {
   };
 
   const genUpdate = (data) => {
-    return [{
-      entry: genEntry(data),
+    return data.map((dataItem) => ({
+      entry: genEntry(dataItem),
       path: genPath()
-    }]
+    }));
   };
 
   const genPath = () => {
@@ -146,8 +148,8 @@ const Home = () => {
       "qa_24190571-8421-4081-9ce4-30671e24b43e",
       "15a4388b-713b-4341-b57c-9d733b170cd0",
       "785522d9-38a4-4f57-b263-a18d12798f64",
-      "19bd8d6f-619e-572d-8cf1-b75553fd684e",
-      "ede60376-1a94-5fbc-9829-b35fd064c0a5"
+      "ae1479d4-7790-507c-8d4e-d08972392de1",
+      "a7a15c9f-1a66-5d62-9cae-770e92086b28"
     ];
   }
 

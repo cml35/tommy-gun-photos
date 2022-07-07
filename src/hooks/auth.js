@@ -1,8 +1,7 @@
 import { CognitoUserPool } from 'amazon-cognito-identity-js';
 
-import { authConfig } from '../config';
-
-const { userPoolId, appClientId } = authConfig;
+const userPoolId = "us-west-2_5C6gxWMSg";
+const appClientId = "7pjrnse0o5821699ib7dmsjosi";
 
 const getCognitoUser = () => {
   const userPool = new CognitoUserPool({
