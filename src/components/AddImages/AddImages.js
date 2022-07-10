@@ -7,10 +7,11 @@ import { getIdToken } from "../../hooks/auth";
 
 setConfig({
   // env should be set to one of 'staging' or 'production'
-  env: "staging"
+  env: "staging",
 });
 
-const BATCH_UPDATE_URL = "https://webapp-api-oceania-staging.con.qa/v1/batchUpdate";
+const BATCH_UPDATE_URL =
+  "https://webapp-api-oceania-staging.con.qa/v1/batchUpdate";
 
 const Home = () => {
   const [image, setImage] = useState("");
@@ -32,30 +33,30 @@ const Home = () => {
 
   const transformDataURLToFile = (dataURL, fileName) => {
     // convert base64 to raw binary data held in a string
-  // doesn't handle URLEncoded DataURIs - see SO answer #6850276 for code that does this
-  let byteString = atob(dataURL.split(',')[1]);
+    // doesn't handle URLEncoded DataURIs - see SO answer #6850276 for code that does this
+    let byteString = atob(dataURL.split(",")[1]);
 
-  // separate out the mime component
-  let mimeString = dataURL.split(',')[0].split(':')[1].split(';')[0]
+    // separate out the mime component
+    let mimeString = dataURL.split(",")[0].split(":")[1].split(";")[0];
 
-  // write the bytes of the string to an ArrayBuffer
-  let ab = new ArrayBuffer(byteString.length);
+    // write the bytes of the string to an ArrayBuffer
+    let ab = new ArrayBuffer(byteString.length);
 
-  // create a view into the buffer
-  let ia = new Uint8Array(ab);
+    // create a view into the buffer
+    let ia = new Uint8Array(ab);
 
-  // set the bytes of the buffer to the correct values
-  for (let i = 0; i < byteString.length; i++) {
+    // set the bytes of the buffer to the correct values
+    for (let i = 0; i < byteString.length; i++) {
       ia[i] = byteString.charCodeAt(i);
-  }
+    }
 
-  // write the ArrayBuffer to a blob, and you're done
-  let file = new File([ab], fileName, {type: mimeString});
-  return file;
-  }
+    // write the ArrayBuffer to a blob, and you're done
+    let file = new File([ab], fileName, { type: mimeString });
+    return file;
+  };
 
   const transform = (bulkImages) => {
-    console.log("@@@@@bulkImages", bulkImages);
+    console.log("bulkImages", bulkImages);
     const transformedImages = bulkImages.map((img) => {
       return transformDataURLToFile(img.image, img.title);
     });
@@ -78,44 +79,40 @@ const Home = () => {
     console.log("files", files);
 
     //Uploads the bulk of images to sS3
-    const data = await Promise.all(files.map(async (file) => {
-      const result = await uploadFile(file);
-      const { key } = result;
-      console.log("key", key);
-      return {
-        ct: file.type,
-        hash: key,
-        name: file.name,
-        type: "post"
-      }
-    }));
-    console.log("data", data);
+    const data = await Promise.all(
+      files.map(async (file) => {
+        const result = await uploadFile(file);
+        const { key } = result;
+        console.log("key", key);
+        return {
+          ct: file.type,
+          hash: key,
+          name: file.name,
+          type: "post",
+        };
+      })
+    );
 
     //need an array of updates one per image
     const updates = genUpdate(data);
-    console.log("updates", updates);
     const requestBody = {
       accountId: "2dfe64e4-36bd-49b5-9be2-a56fbbf02720",
       projectId: "35ae371a-2fd7-4e00-81d5-1596d03252b8",
       source: "addFiles",
-      updates
+      updates,
     };
-    
+
     //Batch update photos to existing checkpoint
     const authToken = await getIdToken();
-    console.log("authToken", authToken);
 
-    console.log("requestBody", requestBody);
-    
     await fetch(BATCH_UPDATE_URL, {
-      "headers": {
-        "authorization": `Bearer ${authToken}`,
-        "content-type": "application/json"
+      headers: {
+        authorization: `Bearer ${authToken}`,
+        "content-type": "application/json",
       },
-      "body": JSON.stringify(requestBody),
-      "method": "POST"
+      body: JSON.stringify(requestBody),
+      method: "POST",
     });
-    console.log("upload completed!");
   };
 
   const genEntry = (someData) => {
@@ -125,21 +122,20 @@ const Home = () => {
       data: [
         {
           ct,
-          hash
-        }
+          hash,
+        },
       ],
       meta: {
         name,
-        type
-      }
-    }
-
+        type,
+      },
+    };
   };
 
   const genUpdate = (data) => {
     return data.map((dataItem) => ({
       entry: genEntry(dataItem),
-      path: genPath()
+      path: genPath(),
     }));
   };
 
@@ -149,13 +145,13 @@ const Home = () => {
       "15a4388b-713b-4341-b57c-9d733b170cd0",
       "785522d9-38a4-4f57-b263-a18d12798f64",
       "ae1479d4-7790-507c-8d4e-d08972392de1",
-      "a7a15c9f-1a66-5d62-9cae-770e92086b28"
+      "a7a15c9f-1a66-5d62-9cae-770e92086b28",
     ];
-  }
+  };
 
   return (
     <div className="home-container">
-      <h1>React-Webcam Demo</h1>
+      <h1>Tommy gun photos</h1>
       {showForm ? (
         <form className="form" onSubmit={submitTitle}>
           <input
